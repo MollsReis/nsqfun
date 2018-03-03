@@ -1,0 +1,10 @@
+{
+  "name": "mapreduce",
+  "version": "1.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.2",
+    "nsqjs": "^0.10.1",
+    "redis": "^2.8.0"
+  }
+}

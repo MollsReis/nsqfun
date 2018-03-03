@@ -1,0 +1,52 @@
+version: '3'
+
+services:
+  redis:
+    image: redis:3.2
+    ports:
+      - '6379'
+
+  nsqd:
+    image: nsqio/nsq
+    command: /nsqd
+    ports:
+      - '4150'
+      - '4151'
+
+  nsqadmin:
+    image: nsqio/nsq
+    command: /nsqadmin --nsqd-http-address=nsqd:4151
+    depends_on:
+      - nsqd
+    ports:
+      - '4171:4171'
+
+  splitter:
+    image: node:8.9-alpine
+    command: 'sh -c "yarn --ignore-optional && node splitter.js"'
+    depends_on:
+      - nsqd
+    ports:
+      - '8080:8080'
+    volumes:
+      - '.:/app'
+    working_dir: '/app'
+
+  mapper:
+    image: node:8.9-alpine
+    command: 'sh -c "yarn --ignore-optional && node mapper.js"'
+    depends_on:
+      - nsqd
+    volumes:
+      - '.:/app'
+    working_dir: '/app'
+
+  reducer:
+    image: node:8.9-alpine
+    command: 'sh -c "yarn --ignore-optional && node reducer.js"'
+    depends_on:
+      - nsqd
+      - redis
+    volumes:
+      - '.:/app'
+    working_dir: '/app'
